@@ -181,16 +181,7 @@ if raw_sheet_df is not None:
 
     st.markdown("---")
     
-    # Create a clean dataframe for plotting
-    plot_df = clean_df.set_index("Date")[["Total Collected", "Net Cash for Today"]]
     
-    # Plotting: Bar chart for Revenue vs Net Cash
-    st.bar_chart(plot_df)
-    
-    # Optional: Plotting Total Players
-    st.subheader("👥 Player Trends")
-    st.line_chart(clean_df.set_index("Date")[["Total Players"]])
-    # --------------------
 
     st.markdown("---")
 
