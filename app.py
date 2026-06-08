@@ -16,23 +16,30 @@ st.markdown("""
         border-right: 2px solid #D4AF37 !important;
     }
     
-    /* Ensure text inside sidebar is white */
+    /* Sidebar Text/Labels */
     [data-testid="stSidebar"] div, [data-testid="stSidebar"] span, [data-testid="stSidebar"] p, [data-testid="stSidebar"] label {
         color: #FFFFFF !important;
     }
 
-    /* FIX: Force collapse button to be visible Gold */
-    button[data-testid="stSidebarCollapseButton"] svg {
-        fill: #D4AF37 !important;
-    }
-    
-    /* Add contrast to the button container */
+    /* FORCE COLLAPSE BUTTON TO BE A VISIBLE GOLD BOX */
     button[data-testid="stSidebarCollapseButton"] {
-        background-color: rgba(212, 175, 55, 0.1) !important;
+        background-color: #D4AF37 !important; /* Gold background */
+        border: none !important;
         border-radius: 5px !important;
+        padding: 5px !important;
+        width: 35px !important;
+        height: 35px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    /* Force the arrow icon to be dark green */
+    button[data-testid="stSidebarCollapseButton"] svg {
+        fill: #013220 !important;
     }
     
-    /* Fix the dropdown box for filter visibility */
+    /* Fix Filter dropdown visibility */
     div[data-baseweb="select"] > div {
         background-color: #ffffff !important;
     }
@@ -65,9 +72,7 @@ st.markdown("""
     /* 4. Text & Table Styling */
     body, p, div, span, h1, h2, h3, h4, h5, h6 { color: #FFFFFF !important; }
     h1, h2, h3 { color: #D4AF37 !important; text-align: center; }
-    
     [data-testid="stDataFrame"] { background-color: #0a4d35 !important; }
-    
     .main .block-container { z-index: 1; position: relative; }
     </style>
     """, unsafe_allow_html=True)
