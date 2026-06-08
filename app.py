@@ -88,6 +88,18 @@ if raw_sheet_df is not None:
     clean_df["Court Cost"] = 3600
     clean_df["Net Cash for Today"] = clean_df.apply(lambda r: (r["Total Collected"] - r["Court Cost"]) - r["Misc Expenses"] if r["Total Players"] > 0 else 0, axis=1)
 
+    # --- ADDED MONTH FILTER ---
+    clean_df['Month'] = pd.to_datetime(clean_df['Date']).dt.month_name()
+    all_months = clean_df['Month'].unique().tolist()
+    
+    with st.sidebar:
+        st.subheader("📊 Filter Data")
+        selected_months = st.multiselect("Select Months:", options=all_months, default=all_months)
+    
+    if selected_months:
+        clean_df = clean_df[clean_df['Month'].isin(selected_months)]
+    # --------------------------
+
     # Metrics
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Total Revenue", f"₱{clean_df['Total Collected'].sum():,.2f}")
