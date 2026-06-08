@@ -1,5 +1,3 @@
-import plotly.express as px
-import plotly.graph_objects as go
 import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
@@ -150,40 +148,7 @@ if raw_sheet_df is not None:
     
     st.markdown("---")
     
-    # --- ENHANCED PLOTLY CHARTS ---
-    st.subheader("📈 Financial Overview")
-
-    # Revenue vs Net Cash Bar Chart
-    fig = go.Figure()
-    fig.add_trace(go.Bar(x=clean_df['Date'], y=clean_df['Total Collected'], name='Total Revenue', marker_color='#D4AF37'))
-    fig.add_trace(go.Bar(x=clean_df['Date'], y=clean_df['Net Cash for Today'], name='Net Cash', marker_color='#76FF7B'))
-
-    fig.update_layout(
-        barmode='group',
-        plot_bgcolor='#0a4d35', 
-        paper_bgcolor='#013220',
-        font_color='#FFFFFF',
-        margin=dict(l=20, r=20, t=30, b=20)
-    )
-    st.plotly_chart(fig, use_container_width=True)
-
-    # Player Trends Line Chart
-    st.subheader("👥 Player Trends")
-    fig2 = px.line(clean_df, x='Date', y='Total Players', markers=True)
-    fig2.update_traces(line_color='#D4AF37', marker=dict(color='#FFFFFF'))
-    fig2.update_layout(
-        plot_bgcolor='#0a4d35',
-        paper_bgcolor='#013220',
-        font_color='#FFFFFF'
-    )
-    st.plotly_chart(fig2, use_container_width=True)
-    # -----------------------------
-
-    st.markdown("---")
     
-    
-
-    st.markdown("---")
 
     def highlight_financials(val):
         # We use lighter shades of green and red to ensure they pop against the dark green background
