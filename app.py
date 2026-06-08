@@ -5,12 +5,41 @@ from datetime import datetime, timedelta
 st.set_page_config(page_title="Del Niño Pickleball Club", page_icon="🏓", layout="wide")
 st.markdown("""
     <style>
-    /* 1. Set the background color */
+    /* 1. Main Background */
     .stApp {
         background-color: #013220 !important; 
     }
     
-    /* 2. HUGE WATERMARK LOGO */
+    /* 2. SIDEBAR STYLING */
+    [data-testid="stSidebar"] {
+        background-color: #0a4d35 !important;
+        border-right: 2px solid #D4AF37 !important;
+    }
+    
+    /* Ensure all text/labels inside sidebar are white */
+    [data-testid="stSidebar"] div, [data-testid="stSidebar"] span, [data-testid="stSidebar"] p, [data-testid="stSidebar"] label {
+        color: #FFFFFF !important;
+    }
+
+    /* Force the collapse button to be visible Gold */
+    [data-testid="stSidebarCollapseButton"] {
+        color: #D4AF37 !important;
+    }
+    
+    /* Fix the dropdown box background and text for readability */
+    div[data-baseweb="select"] > div {
+        background-color: #ffffff !important;
+    }
+    div[data-baseweb="select"] span {
+        color: #000000 !important; 
+    }
+
+    /* Sidebar headers in Gold */
+    [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
+        color: #D4AF37 !important;
+    }
+    
+    /* 3. HUGE WATERMARK LOGO */
     .stApp::before {
         content: "";
         position: fixed;
@@ -21,33 +50,18 @@ st.markdown("""
         background-image: url('https://github.com/isnardonaveen-ctrl/del-nino-pickleball-app/blob/main/6832fb4b-7df6-4105-9c8c-7140bfdf4668-removebg-preview.png?raw=true');
         background-repeat: no-repeat;
         background-position: center;
-        background-size: 50%; /* Adjust this percentage to make it bigger or smaller */
-        opacity: 0.15;        /* Very faint so it doesn't distract from numbers */
+        background-size: 50%;
+        opacity: 0.15;
         pointer-events: none;
         z-index: 0;
     }
 
-    /* 3. Text & Table Styling */
+    /* 4. Text & Table Styling */
     body, p, div, span, h1, h2, h3, h4, h5, h6 { color: #FFFFFF !important; }
     h1, h2, h3 { color: #D4AF37 !important; text-align: center; }
     
     [data-testid="stDataFrame"] { background-color: #0a4d35 !important; }
-    /* 2. SIDEBAR STYLING */
-    [data-testid="stSidebar"] {
-        background-color: #0a4d35 !important; /* A slightly lighter green for contrast */
-        border-right: 2px solid #D4AF37 !important; /* Gold border to match branding */
-    }
     
-    /* Sidebar text color - forces everything inside to be white */
-    [data-testid="stSidebar"] div, [data-testid="stSidebar"] span, [data-testid="stSidebar"] p, [data-testid="stSidebar"] label {
-        color: #FFFFFF !important;
-    }
-
-    /* Sidebar headers/labels in Gold */
-    [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
-        color: #D4AF37 !important;
-    }
-    /* 4. Ensure content sits above the watermark */
     .main .block-container { z-index: 1; position: relative; }
     </style>
     """, unsafe_allow_html=True)
