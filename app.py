@@ -32,7 +32,21 @@ st.markdown("""
     h1, h2, h3 { color: #D4AF37 !important; text-align: center; }
     
     [data-testid="stDataFrame"] { background-color: #0a4d35 !important; }
+    /* 2. SIDEBAR STYLING */
+    [data-testid="stSidebar"] {
+        background-color: #0a4d35 !important; /* A slightly lighter green for contrast */
+        border-right: 2px solid #D4AF37 !important; /* Gold border to match branding */
+    }
     
+    /* Sidebar text color - forces everything inside to be white */
+    [data-testid="stSidebar"] div, [data-testid="stSidebar"] span, [data-testid="stSidebar"] p, [data-testid="stSidebar"] label {
+        color: #FFFFFF !important;
+    }
+
+    /* Sidebar headers/labels in Gold */
+    [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
+        color: #D4AF37 !important;
+    }
     /* 4. Ensure content sits above the watermark */
     .main .block-container { z-index: 1; position: relative; }
     </style>
