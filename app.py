@@ -3,7 +3,29 @@ import pandas as pd
 from datetime import datetime, timedelta
 
 st.set_page_config(page_title="Del Niño Pickleball Club", page_icon="🏓", layout="wide")
-
+st.markdown("""
+    <style>
+    /* 1. Set the background color to Del Niño Forest Green */
+    .stApp {
+        background-color: #013220; 
+    }
+    
+    /* 2. Set all text to white so it's readable against the dark green */
+    body, p, div, span, h1, h2, h3, h4, h5, h6 {
+        color: #FFFFFF !important;
+    }
+    
+    /* 3. Keep your Gold brand color for Headers */
+    h1, h2, h3 {
+        color: #D4AF37 !important;
+    }
+    
+    /* 4. Style the DataFrames to be transparent/dark-themed */
+    [data-testid="stDataFrame"] {
+        background-color: #0a4d35 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 st.title("Del Niño Pickleball Club Tracker")
 st.markdown("---")
 
