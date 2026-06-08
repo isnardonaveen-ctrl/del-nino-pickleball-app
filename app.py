@@ -6,101 +6,63 @@ st.set_page_config(page_title="Del Niño Pickleball Club", page_icon="🏓", lay
 st.markdown("""
     <style>
     /* 1. Main Background */
-    .stApp {
-        background-color: #013220 !important; 
-    }
+    .stApp { background-color: #013220 !important; }
     
     /* 2. SIDEBAR STYLING */
     [data-testid="stSidebar"] {
         background-color: #0a4d35 !important;
         border-right: 2px solid #D4AF37 !important;
     }
-    
-    /* Sidebar Text/Labels */
-    [data-testid="stSidebar"] div, [data-testid="stSidebar"] span, [data-testid="stSidebar"] p, [data-testid="stSidebar"] label {
-        color: #FFFFFF !important;
-    }
+    [data-testid="stSidebar"] div, [data-testid="stSidebar"] span, [data-testid="stSidebar"] p, [data-testid="stSidebar"] label { color: #FFFFFF !important; }
 
-    /* FORCE COLLAPSE BUTTON TO BE A VISIBLE GOLD BOX */
-    button[data-testid="stSidebarCollapseButton"] {
-        background-color: #D4AF37 !important; /* Gold background */
-        border: none !important;
-        border-radius: 5px !important;
-        padding: 5px !important;
-        width: 35px !important;
-        height: 35px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-
-    /* Force the arrow icon to be dark green */
-    button[data-testid="stSidebarCollapseButton"] svg {
-        fill: #013220 !important;
-    }
-    
-    /* Fix Filter dropdown visibility */
+    /* 3. DROPDOWN (SELECTBOX) - HIGH CONTRAST */
     div[data-baseweb="select"] > div {
-        background-color: #ffffff !important;
+        background-color: #FFFFFF !important;
+        border: 3px solid #D4AF37 !important;
+        border-radius: 8px !important;
+        color: #000000 !important;
     }
     div[data-baseweb="select"] span {
-        color: #000000 !important; 
-    }
-
-    /* Sidebar headers in Gold */
-    [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
-        color: #D4AF37 !important;
-    }
-    
-    /* 3. HUGE WATERMARK LOGO */
-    .stApp::before {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: url('https://github.com/isnardonaveen-ctrl/del-nino-pickleball-app/blob/main/6832fb4b-7df6-4105-9c8c-7140bfdf4668-removebg-preview.png?raw=true');
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: 50%;
-        opacity: 0.15;
-        pointer-events: none;
-        z-index: 0;
-    }
-
-    /* 4. Text & Table Styling */
-    body, p, div, span, h1, h2, h3, h4, h5, h6 { color: #FFFFFF !important; }
-    h1, h2, h3 { color: #D4AF37 !important; text-align: center; }
-    [data-testid="stDataFrame"] { background-color: #0a4d35 !important; }
-    .main .block-container { z-index: 1; position: relative; }
-    /* Fix for Dropdown Text */
-    div[data-baseweb="select"] div[role="combobox"] {
-        background-color: #ffffff !important;
         color: #000000 !important;
+        font-weight: 900 !important;
+        font-size: 1.1rem !important;
     }
-    
-    /* Fix for Dropdown Menu options */
-    div[role="listbox"] {
-        background-color: #ffffff !important;
-    }
-    div[role="listbox"] span {
-        color: #000000 !important;
-    }
+    div[role="listbox"] { background-color: #FFFFFF !important; }
+    div[role="listbox"] span { color: #000000 !important; font-weight: bold !important; }
 
-    /* Fix for Buttons */
+    /* 4. BUTTONS - HIGH CONTRAST */
     div.stButton > button {
         background-color: #D4AF37 !important;
         color: #013220 !important;
         font-weight: bold !important;
-        border: none !important;
+        border: 2px solid #FFFFFF !important;
     }
-    
-    /* Fix for Download Button specifically */
     div.stDownloadButton > button {
         background-color: #76FF7B !important;
         color: #013220 !important;
+        font-weight: bold !important;
+        border: 2px solid #FFFFFF !important;
     }
+
+    /* 5. LABELS */
+    div[data-testid="stWidgetLabel"] p {
+        color: #D4AF37 !important;
+        font-weight: bold !important;
+        font-size: 1.1rem !important;
+    }
+
+    /* 6. WATERMARK LOGO */
+    .stApp::before {
+        content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background-image: url('https://github.com/isnardonaveen-ctrl/del-nino-pickleball-app/blob/main/6832fb4b-7df6-4105-9c8c-7140bfdf4668-removebg-preview.png?raw=true');
+        background-repeat: no-repeat; background-position: center; background-size: 50%;
+        opacity: 0.15; pointer-events: none; z-index: 0;
+    }
+    
+    body, p, div, span, h1, h2, h3, h4, h5, h6 { color: #FFFFFF !important; }
+    h1, h2, h3 { color: #D4AF37 !important; text-align: center; }
+    [data-testid="stDataFrame"] { background-color: #0a4d35 !important; }
+    .main .block-container { z-index: 1; position: relative; }
     </style>
     """, unsafe_allow_html=True)
 # Create a centered container using empty outer columns
