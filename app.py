@@ -27,20 +27,24 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 # Create a centered container using empty outer columns
-col_spacer1, col_center, col_spacer2 = st.columns([1.5, 6, 1.5])
+# --- REPLACED HEADER BLOCK ---
+# Create one main centered container
+col_spacer1, col_center, col_spacer2 = st.columns([1, 6, 1])
 
 with col_center:
-    # Nested columns to keep logo and title side-by-side inside the centered block
-    sub_col_logo, sub_col_title = st.columns([1, 5])
-    
-    with sub_col_logo:
-        st.image("https://github.com/isnardonaveen-ctrl/del-nino-pickleball-app/blob/main/6832fb4b-7df6-4105-9c8c-7140bfdf4668-removebg-preview.png?raw=true", width=140)
-    
-    with sub_col_title:
-        # We add some vertical padding to align text with the logo
-        st.write("<br>", unsafe_allow_html=True)
-        st.title("Del Niño Pickleball Club Tracker")
+    # Use st.container to group them and force alignment
+    header_container = st.container()
+    with header_container:
+        # Use two columns within the center to get them side-by-side
+        c1, c2 = st.columns([1, 4])
+        with c1:
+            st.image("https://github.com/isnardonaveen-ctrl/del-nino-pickleball-app/blob/main/6832fb4b-7df6-4105-9c8c-7140bfdf4668-removebg-preview.png?raw=true", width=120)
+        with c2:
+            # We remove the st.write gap and use a raw HTML header for precise control
+            st.markdown("<br><h1 style='text-align: left; color: #D4AF37;'>Del Niño Pickleball Club Tracker</h1>", unsafe_allow_html=True)
+
 st.markdown("---")
+# --- END REPLACED BLOCK ---
 
 BASE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1kDSwEA75lTPwv-wNGCnU6IPI2day9D69hgan_xuG7sA/edit?gid=0#gid=0"
 
