@@ -45,18 +45,15 @@ if raw_sheet_df is not None:
     else:
         clean_df = calendar_df
 
-    # Calculations with forced Integer formatting for counts
+    # Calculations
     clean_df["Members Count"] = pd.to_numeric(clean_df.get("Members Count", 0), errors='coerce').fillna(0).astype(int)
     clean_df["Non-Members Count"] = pd.to_numeric(clean_df.get("Non-Members Count", 0), errors='coerce').fillna(0).astype(int)
     clean_df["Misc Expenses"] = pd.to_numeric(clean_df.get("Misc Expenses", 0), errors='coerce').fillna(0)
     
-    # Total players as clean integer
     clean_df["Total Players"] = (clean_df["Members Count"] + clean_df["Non-Members Count"]).astype(int)
-    
     clean_df["Total Collected"] = (clean_df["Members Count"] * 100) + (clean_df["Non-Members Count"] * 150)
     clean_df["Court Cost"] = 3600
     
-    # Net Cash Logic
     clean_df["Net Cash for Today"] = clean_df.apply(
         lambda r: (r["Total Collected"] - r["Court Cost"]) - r["Misc Expenses"] if r["Total Players"] > 0 else 0, axis=1
     )
@@ -70,10 +67,14 @@ if raw_sheet_df is not None:
     
     st.markdown("---")
     
-    # Display Ledger
+    # 🎨 COLOR HIGHLIGHTING LOGIC
+    def highlight_financials(val):
+        color = '#375623' if val > 0 else '#C00000' if val < 0 else 'black'
+        bg = '#E2EFDA' if val > 0 else '#FCE4D6' if val < 0 else ''
+        return f'color: {color}; background-color: {bg}; font-weight: bold;'
+
     st.subheader("Live Session Ledger")
     
-    # We use a formatter dictionary to keep 'Total Players' as integer
     display_df = clean_df[[
         "Date", "Day", "Venue", "Members Count", "Non-Members Count", 
         "Total Players", "Total Collected", "Court Cost", "Misc Expenses", "Net Cash for Today"
@@ -87,4 +88,4 @@ if raw_sheet_df is not None:
         "Members Count": "{:.0f}",
         "Non-Members Count": "{:.0f}",
         "Total Players": "{:.0f}"
-    }), use_container_width=True)
+    }).applymap(highlight_financials, subset=['Net Cash for Today']), use_container_width=True)
