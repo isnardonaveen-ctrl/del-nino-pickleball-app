@@ -59,7 +59,8 @@ st.markdown("""
         opacity: 0.15; pointer-events: none; z-index: 0;
     }
     
-    body, p, div, span, h1, h2, h3, h4, h5, h6 { color: #FFFFFF !important; }
+    /* 4. Text & Table Styling (Removed div and span to fix dropdowns) */
+    body, p, h1, h2, h3, h4, h5, h6 { color: #FFFFFF !important; }
     h1, h2, h3 { color: #D4AF37 !important; text-align: center; }
     [data-testid="stDataFrame"] { background-color: #0a4d35 !important; }
     .main .block-container { z-index: 1; position: relative; }
