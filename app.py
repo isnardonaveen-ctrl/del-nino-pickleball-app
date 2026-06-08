@@ -110,7 +110,34 @@ def generate_2026_calendar():
 
 raw_sheet_df = load_live_data(BASE_SHEET_URL)
 calendar_df = generate_2026_calendar()
+from fpdf import FPDF
 
+def generate_monthly_report(df, month_name):
+    pdf = FPDF()
+    pdf.add_page()
+    
+    # Title
+    pdf.set_font("Arial", 'B', 16)
+    pdf.cell(0, 10, f"Del Nino Club Report: {month_name} 2026", ln=True, align='C')
+    pdf.ln(10)
+    
+    # Calculations
+    total_expenses = df['Misc Expenses'].sum()
+    avg_players = df['Total Players'].mean() if not df.empty else 0
+    total_costs = df['Court Cost'].sum() + total_expenses
+    
+    # Summary Table
+    pdf.set_font("Arial", '', 12)
+    pdf.cell(100, 10, "Total Expenses:", border=1)
+    pdf.cell(0, 10, f"PHP {total_expenses:,.2f}", border=1, ln=True)
+    
+    pdf.cell(100, 10, "Average Players/Day:", border=1)
+    pdf.cell(0, 10, f"{avg_players:.1f}", border=1, ln=True)
+    
+    pdf.cell(100, 10, "Total Operational Costs:", border=1)
+    pdf.cell(0, 10, f"PHP {total_costs:,.2f}", border=1, ln=True)
+    
+    return pdf.output(dest='S').encode('latin-1')
 if raw_sheet_df is not None:
     raw_sheet_df.columns = raw_sheet_df.columns.str.strip()
     if "Date" in raw_sheet_df.columns:
@@ -170,4 +197,17 @@ if raw_sheet_df is not None:
         st.dataframe(expense_df.style.format({"Misc Expenses": "₱{:,.2f}"}), use_container_width=True)
 
     with tab3:
-        st.info("Select a row to generate your Viber report.")
+        st.subheader("📋 Monthly Audit Report")
+        selected_month_for_pdf = st.selectbox("Choose a month to export:", all_months)
+        
+        if st.button("Generate PDF Report"):
+            report_df = clean_df[clean_df['Month'] == selected_month_for_pdf]
+            pdf_data = generate_monthly_report(report_df, selected_month_for_pdf)
+            
+            st.download_button(
+                label="📥 Download PDF Report",
+                data=pdf_data,
+                file_name=f"Report_{selected_month_for_pdf}_2026.pdf",
+                mime="application/pdf"
+            )
+            st.success(f"Report for {selected_month_for_pdf} generated!")
