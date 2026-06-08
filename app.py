@@ -8,7 +8,7 @@ st.title("🏓 Del Niño Pickleball Club Dashboard")
 st.markdown("---")
 
 # 🟢 PASTE YOUR NEW GOOGLE SHEET URL HERE
-BASE_SHEET_URL = "PASTE_YOUR_NEW_GOOGLE_SHEETS_LINK_HERE"
+BASE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1kDSwEA75lTPwv-wNGCnU6IPI2day9D69hgan_xuG7sA/edit?gid=0#gid=0"
 
 @st.cache_data(ttl=5)
 def load_live_data(sheet_url):
