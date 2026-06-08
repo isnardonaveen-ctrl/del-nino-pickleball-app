@@ -1,56 +1,93 @@
 import streamlit as st
 import pandas as pd
+from datetime import datetime, timedelta
 
 # Page Window Config Setup
 st.set_page_config(page_title="Del Niño Pickleball Club", page_icon="🏓", layout="wide")
 
 st.title("🏓 Del Niño Pickleball Club Dashboard")
-st.markdown("### Running Management & Cash Flow Hub")
+st.markdown("### Running Management & Cash Flow Hub (Auto-Calendar 2026)")
 st.markdown("---")
 
-# 🟢 LINKED DIRECTLY TO YOUR CLEAN SHEET TEMPLATE
-BASE_SHEET_URL = "https://docs.google.com/spreadsheets/d/14KbwOJO1UEDbDI_uy-30rsaypG0iaUmgrQqsmuUd0xg/edit"
+# 🟢 PASTE YOUR NEW GOOGLE SHEET URL HERE
+BASE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1kDSwEA75lTPwv-wNGCnU6IPI2day9D69hgan_xuG7sA/edit?gid=0#gid=0"
 
-@st.cache_data(ttl=5)  # Fast 5-second automatic data sync refresh loop
+@st.cache_data(ttl=5)  # 5-second fast auto-refresh
 def load_live_data(sheet_url):
     try:
-        # Convert standard URL link into a raw CSV export stream
-        csv_url = sheet_url.split("/edit")[0] + "/export?format=csv&gid=0"
+        csv_url = sheet_url.split("/edit")[0] + "/gviz/tq?tqx=out:csv"
         df = pd.read_csv(csv_url)
         return df
     except Exception as e:
-        st.error(f"Error accessing your Google Sheet layout: {e}")
+        st.error(f"Database sync handshake interrupted: {e}")
         return None
 
-df = load_live_data(BASE_SHEET_URL)
-
-if df is not None and not df.empty:
-    # Remove hidden spaces out of the data headers
-    df.columns = df.columns.str.strip()
+# 📅 AUTOMATED CALENDAR GENERATOR (Generates June 9 to Dec 31, 2026)
+def generate_2026_calendar():
+    start_date = datetime(2026, 6, 9)
+    end_date = datetime(2026, 12, 31)
     
-    # Isolate real operational date entries safely
-    if "Date" in df.columns:
-        clean_df = df.dropna(subset=["Date"]).copy()
-        clean_df["Date"] = clean_df["Date"].astype(str).str.strip()
-        clean_df = clean_df[clean_df["Date"].str.contains(r'\d', na=False)]
-    else:
-        clean_df = df.copy()
+    dates = []
+    days = []
+    venues = []
+    
+    current = start_date
+    while current <= end_date:
+        # Exclude Sundays (assuming open play runs Mon-Sat)
+        if current.weekday() != 6:  
+            dates.append(current.strftime("%Y-%m-%d"))
+            days.append(current.strftime("%A"))
+            # Alternate venues based on days
+            if current.strftime("%A") in ["Tuesday", "Thursday", "Saturday"]:
+                venues.append("Southside")
+            else:
+                venues.append("Smashville")
+        current += timedelta(days=1)
         
-    # Standardize tracking blocks into true mathematical numeric values
-    numeric_cols = ["Total Collected", "Session Profit/Loss", "Misc Expenses", "Members Count", "Non-Members Count", "Total Players"]
-    for col in numeric_cols:
-        if col in clean_df.columns:
-            clean_df[col] = pd.to_numeric(clean_df[col].astype(str).str.replace('₱', '').str.replace(',', ''), errors='coerce').fillna(0)
-        else:
-            clean_df[col] = 0
+    return pd.DataFrame({"Date": dates, "Day": days, "Venue": venues})
 
-    # Running Operational Ledger Aggregations
+raw_sheet_df = load_live_data(BASE_SHEET_URL)
+calendar_df = generate_2026_calendar()
+
+if raw_sheet_df is not None:
+    # Clean headers
+    raw_sheet_df.columns = raw_sheet_df.columns.str.strip()
+    
+    # Clean user inputs from Google Sheet
+    if "Date" in raw_sheet_df.columns:
+        raw_sheet_df["Date"] = raw_sheet_df["Date"].astype(str).str.strip()
+        raw_sheet_df = raw_sheet_df.dropna(subset=["Date"])
+    
+    # Merge the user inputs into the master generated 2026 calendar framework
+    clean_df = pd.merge(calendar_df, raw_sheet_df, on="Date", how="left")
+    
+    # Fill empty/unplayed days with zero values automatically
+    clean_df["Members Count"] = pd.to_numeric(clean_df.get("Members Count", 0), errors='coerce').fillna(0).astype(int)
+    clean_df["Non-Members Count"] = pd.to_numeric(clean_df.get("Non-Members Count", 0), errors='coerce').fillna(0).astype(int)
+    clean_df["Misc Expenses"] = pd.to_numeric(clean_df.get("Misc Expenses", 0), errors='coerce').fillna(0)
+    clean_df["Expenses Remarks"] = clean_df.get("Expenses Remarks", "").fillna("None")
+    
+    # System Fees Fixed Constants
+    clean_df["Member Fee"] = 100
+    clean_df["Non-Member Fee"] = 150
+    clean_df["Court Cost"] = 3600
+    
+    # Live Financial Math Calculations
+    clean_df["Total Players"] = clean_df["Members Count"] + clean_df["Non-Members Count"]
+    clean_df["Total Collected"] = (clean_df["Members Count"] * clean_df["Member Fee"]) + (clean_df["Non-Members Count"] * clean_df["Non-Member Fee"])
+    
+    # Session profit calculation runs ONLY if players are present
+    clean_df["Session Profit/Loss"] = clean_df.apply(
+        lambda r: r["Total Collected"] - r["Court Cost"] if r["Total Players"] > 0 else 0, axis=1
+    )
+
+    # Global KPI Summary Logic
     total_revenue = clean_df["Total Collected"].sum()
     gross_profits = clean_df[clean_df["Session Profit/Loss"] > 0]["Session Profit/Loss"].sum()
     total_expenses = clean_df["Misc Expenses"].sum()
     cash_in_bank = gross_profits - total_expenses
 
-    # Display Top Live Financial Status Cards Row
+    # Metric Dashboard Layout View
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Total Open Play Revenue", f"₱{total_revenue:,.2f}")
     col2.metric("Gross Play Profits", f"₱{gross_profits:,.2f}")
@@ -59,11 +96,13 @@ if df is not None and not df.empty:
     
     st.markdown("---")
     
-    # Operational Application Sub-Navigation Views
     tab1, tab2, tab3 = st.tabs(["📅 Live Session Ledger", "💵 Expenses Ledger (2nd Sheet)", "📋 Clipboard Report Generator"])
     
     with tab1:
-        st.subheader("Rolling Activity Records")
+        st.subheader("2026 Master Activity Records")
+        
+        final_ledger_cols = ["Date", "Day", "Venue", "Members Count", "Non-Members Count", "Total Players", "Total Collected", "Court Cost", "Session Profit/Loss", "Misc Expenses", "Expenses Remarks"]
+        ledger_display = clean_df[final_ledger_cols].copy()
         
         def highlight_financials(row):
             formats = [''] * len(row)
@@ -76,23 +115,21 @@ if df is not None and not df.empty:
                     formats[idx] = 'background-color: #FCE4D6; color: #C00000; font-weight: bold;'
             return formats
 
-        styled_df = clean_df.style.apply(highlight_financials, axis=1)
-        st.dataframe(styled_df, use_container_width=True, height=400)
+        styled_df = ledger_display.style.apply(highlight_financials, axis=1).format({
+            "Total Collected": "₱{:,.2f}", "Court Cost": "₱{:,.2f}", "Session Profit/Loss": "₱{:,.2f}", "Misc Expenses": "₱{:,.2f}"
+        })
+        st.dataframe(styled_df, use_container_width=True, height=450)
         
     with tab2:
         st.subheader("Automated Club Expense Tracker")
-        st.caption("Isolates lines where custom miscellaneous costs were logged inside the workbook.")
+        expense_mask = clean_df["Misc Expenses"] > 0
+        expenses_df = clean_df[expense_mask][["Date", "Venue", "Misc Expenses", "Expenses Remarks"]].copy()
         
-        if "Misc Expenses" in clean_df.columns:
-            expense_mask = clean_df["Misc Expenses"] > 0
-            expenses_df = clean_df[expense_mask][["Date", "Venue", "Misc Expenses", "Expenses Remarks"]].copy()
-            expenses_df.columns = ["Expense Date", "Venue Context", "Amount Paid", "Expense Remarks / Description"]
-            
-            if len(expenses_df) > 0:
-                st.dataframe(expenses_df.style.format({"Amount Paid": "₱{:,.2f}"}), use_container_width=True)
-                st.metric("Total Logged Expenses Balance", f"₱{total_expenses:,.2f}")
-            else:
-                st.info("No club expenses recorded yet! Add a value to the 'Misc Expenses' column in your sheet to automatically see it populate.")
+        if len(expenses_df) > 0:
+            st.dataframe(expenses_df.style.format({"Misc Expenses": "₱{:,.2f}"}), use_container_width=True)
+            st.metric("Total Logged Expenses Balance", f"₱{total_expenses:,.2f}")
+        else:
+            st.info("No club expenses recorded yet! Add a value to the 'Misc Expenses' column in your sheet to automatically see it populate.")
         
     with tab3:
         st.subheader("Viber / Messenger Clipboard Template")
@@ -124,5 +161,3 @@ if df is not None and not df.empty:
  🚀 *CURRENT CASH IN BANK:* ₱{cash_in_bank:,.2f}"""
 
             st.text_area("Highlight and Copy Text Box Below:", value=flash_report, height=400)
-else:
-    st.warning("Awaiting operational logging column metrics from your clean spreadsheet...")
