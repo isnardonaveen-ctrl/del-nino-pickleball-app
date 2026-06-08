@@ -1,58 +1,42 @@
 import streamlit as st
 import pandas as pd
 
-# 1. Page Configuration Setup
+# Page Window Config Setup
 st.set_page_config(page_title="Del Niño Pickleball Club", page_icon="🏓", layout="wide")
 
 st.title("🏓 Del Niño Pickleball Club Dashboard")
 st.markdown("### Running Management & Cash Flow Hub")
 st.markdown("---")
 
-# 🟢 YOUR EXACT LIVE MULTI-TAB GOOGLE SHEET URL
-BASE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1U10CeH9VqpCnheUfXsesUR3GeYDNvhO8gIcz4b15aR4/edit"
+# 🟢 LINKED DIRECTLY TO YOUR CLEAN SHEET TEMPLATE
+BASE_SHEET_URL = "https://docs.google.com/spreadsheets/d/14KbwOJO1UEDbDI_uy-30rsaypG0iaUmgrQqsmuUd0xg/edit"
 
-@st.cache_data(ttl=5)  # Fast 5-second refresh to easily see live data edits!
+@st.cache_data(ttl=5)  # Fast 5-second automatic data sync refresh loop
 def load_live_data(sheet_url):
     try:
-        # Step A: Create a universal export URL that reads the full sheet layout cleanly
-        csv_url = sheet_url.split("/edit")[0] + "/export?format=csv"
-        raw_df = pd.read_csv(csv_url, header=None)
-        
-        # Step B: Dynamically scan every single cell to locate where your "Date" column starts
-        header_row_idx = None
-        for idx, row in raw_df.iterrows():
-            row_values = [str(val).strip() for val in row.values]
-            if "Date" in row_values:
-                header_row_idx = idx
-                break
-        
-        if header_row_idx is None:
-            st.error("Could not locate the 'Date' column header in your Google Sheet rows. Please make sure the word 'Date' is spelled correctly.")
-            return None
-            
-        # Step C: Perfect parsing from your exact data anchor row
-        df = pd.read_csv(csv_url, skiprows=header_row_idx)
+        # Convert standard URL link into a raw CSV export stream
+        csv_url = sheet_url.split("/edit")[0] + "/export?format=csv&gid=0"
+        df = pd.read_csv(csv_url)
         return df
     except Exception as e:
-        st.error(f"Error fetching data from cloud database stream: {e}")
+        st.error(f"Error accessing your Google Sheet layout: {e}")
         return None
 
 df = load_live_data(BASE_SHEET_URL)
 
 if df is not None and not df.empty:
-    # Clean up hidden spaces in headers
+    # Remove hidden spaces out of the data headers
     df.columns = df.columns.str.strip()
     
-    # Isolate real date entries and safely drop structural placeholder elements
+    # Isolate real operational date entries safely
     if "Date" in df.columns:
         clean_df = df.dropna(subset=["Date"]).copy()
         clean_df["Date"] = clean_df["Date"].astype(str).str.strip()
-        # Only process active dates that look like valid entries
         clean_df = clean_df[clean_df["Date"].str.contains(r'\d', na=False)]
     else:
         clean_df = df.copy()
         
-    # Force clean numbers for flawless financial metrics math
+    # Standardize tracking blocks into true mathematical numeric values
     numeric_cols = ["Total Collected", "Session Profit/Loss", "Misc Expenses", "Members Count", "Non-Members Count", "Total Players"]
     for col in numeric_cols:
         if col in clean_df.columns:
@@ -60,13 +44,13 @@ if df is not None and not df.empty:
         else:
             clean_df[col] = 0
 
-    # Club Budget Metric Cards Sums
+    # Running Operational Ledger Aggregations
     total_revenue = clean_df["Total Collected"].sum()
     gross_profits = clean_df[clean_df["Session Profit/Loss"] > 0]["Session Profit/Loss"].sum()
     total_expenses = clean_df["Misc Expenses"].sum()
     cash_in_bank = gross_profits - total_expenses
 
-    # Display Top Dashboard Metrics
+    # Display Top Live Financial Status Cards Row
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Total Open Play Revenue", f"₱{total_revenue:,.2f}")
     col2.metric("Gross Play Profits", f"₱{gross_profits:,.2f}")
@@ -75,13 +59,12 @@ if df is not None and not df.empty:
     
     st.markdown("---")
     
-    # 2. Main Multi-Tab Display
+    # Operational Application Sub-Navigation Views
     tab1, tab2, tab3 = st.tabs(["📅 Live Session Ledger", "💵 Expenses Ledger (2nd Sheet)", "📋 Clipboard Report Generator"])
     
     with tab1:
         st.subheader("Rolling Activity Records")
         
-        # Financial indicator highlighting rule matrix
         def highlight_financials(row):
             formats = [''] * len(row)
             if "Session Profit/Loss" in row.index:
@@ -109,7 +92,7 @@ if df is not None and not df.empty:
                 st.dataframe(expenses_df.style.format({"Amount Paid": "₱{:,.2f}"}), use_container_width=True)
                 st.metric("Total Logged Expenses Balance", f"₱{total_expenses:,.2f}")
             else:
-                st.info("No club expenses recorded yet! Add a value to the 'Misc Expenses' column in your Google Sheet to automatically see it here.")
+                st.info("No club expenses recorded yet! Add a value to the 'Misc Expenses' column in your sheet to automatically see it populate.")
         
     with tab3:
         st.subheader("Viber / Messenger Clipboard Template")
@@ -142,4 +125,4 @@ if df is not None and not df.empty:
 
             st.text_area("Highlight and Copy Text Box Below:", value=flash_report, height=400)
 else:
-    st.warning("Awaiting clear structural tracking values from your cloud spreadsheet...")
+    st.warning("Awaiting operational logging column metrics from your clean spreadsheet...")
