@@ -74,6 +74,33 @@ st.markdown("""
     h1, h2, h3 { color: #D4AF37 !important; text-align: center; }
     [data-testid="stDataFrame"] { background-color: #0a4d35 !important; }
     .main .block-container { z-index: 1; position: relative; }
+    /* Fix for Dropdown Text */
+    div[data-baseweb="select"] div[role="combobox"] {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+    }
+    
+    /* Fix for Dropdown Menu options */
+    div[role="listbox"] {
+        background-color: #ffffff !important;
+    }
+    div[role="listbox"] span {
+        color: #000000 !important;
+    }
+
+    /* Fix for Buttons */
+    div.stButton > button {
+        background-color: #D4AF37 !important;
+        color: #013220 !important;
+        font-weight: bold !important;
+        border: none !important;
+    }
+    
+    /* Fix for Download Button specifically */
+    div.stDownloadButton > button {
+        background-color: #76FF7B !important;
+        color: #013220 !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 # Create a centered container using empty outer columns
@@ -200,10 +227,12 @@ if raw_sheet_df is not None:
         st.subheader("📋 Monthly Audit Report")
         selected_month_for_pdf = st.selectbox("Choose a month to export:", all_months)
         
+        # This button will now be Gold
         if st.button("Generate PDF Report"):
             report_df = clean_df[clean_df['Month'] == selected_month_for_pdf]
             pdf_data = generate_monthly_report(report_df, selected_month_for_pdf)
             
+            # This button will now be Success Green
             st.download_button(
                 label="📥 Download PDF Report",
                 data=pdf_data,
