@@ -5,44 +5,43 @@ from datetime import datetime, timedelta
 st.set_page_config(page_title="Del Niño Pickleball Club", page_icon="🏓", layout="wide")
 st.markdown("""
     <style>
-    /* 1. Set the background color to Del Niño Forest Green */
+    /* 1. Set the background color */
     .stApp {
-        background-color: #013220; 
+        background-color: #013220 !important; 
     }
     
-    /* 2. Set all text to white so it's readable against the dark green */
-    body, p, div, span, h1, h2, h3, h4, h5, h6 {
-        color: #FFFFFF !important;
+    /* 2. HUGE WATERMARK LOGO */
+    .stApp::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('https://github.com/isnardonaveen-ctrl/del-nino-pickleball-app/blob/main/6832fb4b-7df6-4105-9c8c-7140bfdf4668-removebg-preview.png?raw=true');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 50%; /* Adjust this percentage to make it bigger or smaller */
+        opacity: 0.15;        /* Very faint so it doesn't distract from numbers */
+        pointer-events: none;
+        z-index: 0;
     }
+
+    /* 3. Text & Table Styling */
+    body, p, div, span, h1, h2, h3, h4, h5, h6 { color: #FFFFFF !important; }
+    h1, h2, h3 { color: #D4AF37 !important; text-align: center; }
     
-    /* 3. Keep your Gold brand color for Headers */
-    h1, h2, h3 {
-        color: #D4AF37 !important;
-    }
+    [data-testid="stDataFrame"] { background-color: #0a4d35 !important; }
     
-    /* 4. Style the DataFrames to be transparent/dark-themed */
-    [data-testid="stDataFrame"] {
-        background-color: #0a4d35 !important;
-    }
+    /* 4. Ensure content sits above the watermark */
+    .main .block-container { z-index: 1; position: relative; }
     </style>
     """, unsafe_allow_html=True)
 # Create a centered container using empty outer columns
 # --- REPLACED HEADER BLOCK ---
 # Create one main centered container
-col_spacer1, col_center, col_spacer2 = st.columns([1, 6, 1])
-
-with col_center:
-    # Use st.container to group them and force alignment
-    header_container = st.container()
-    with header_container:
-        # Use two columns within the center to get them side-by-side
-        c1, c2 = st.columns([1, 4])
-        with c1:
-            st.image("https://github.com/isnardonaveen-ctrl/del-nino-pickleball-app/blob/main/6832fb4b-7df6-4105-9c8c-7140bfdf4668-removebg-preview.png?raw=true", width=260)
-        with c2:
-            # We remove the st.write gap and use a raw HTML header for precise control
-            st.markdown("<br><h1 style='text-align: left; color: #D4AF37;'>Del Niño Pickleball Club Tracker</h1>", unsafe_allow_html=True)
-
+# Centered Title (no columns needed now)
+st.markdown("<h1 style='text-align: center; color: #D4AF37;'>Del Niño Pickleball Club Tracker</h1>", unsafe_allow_html=True)
 st.markdown("---")
 # --- END REPLACED BLOCK ---
 
