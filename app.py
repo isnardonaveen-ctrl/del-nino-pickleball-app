@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 # Page Window Config Setup
 st.set_page_config(page_title="Del Niño Pickleball Club", page_icon="🏓", layout="wide")
 
-st.title("🏓 Del Niño Pickleball Club Dashboard")
+st.title("🏓 Del Niño Pickleball Club Tracker")
 st.markdown("### Running Management & Cash Flow Hub (Auto-Calendar 2026)")
 st.markdown("---")
 
