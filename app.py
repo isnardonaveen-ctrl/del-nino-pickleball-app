@@ -38,7 +38,7 @@ with col_center:
         # Use two columns within the center to get them side-by-side
         c1, c2 = st.columns([1, 4])
         with c1:
-            st.image("https://github.com/isnardonaveen-ctrl/del-nino-pickleball-app/blob/main/6832fb4b-7df6-4105-9c8c-7140bfdf4668-removebg-preview.png?raw=true", width=120)
+            st.image("https://github.com/isnardonaveen-ctrl/del-nino-pickleball-app/blob/main/6832fb4b-7df6-4105-9c8c-7140bfdf4668-removebg-preview.png?raw=true", width=260)
         with c2:
             # We remove the st.write gap and use a raw HTML header for precise control
             st.markdown("<br><h1 style='text-align: left; color: #D4AF37;'>Del Niño Pickleball Club Tracker</h1>", unsafe_allow_html=True)
