@@ -4,10 +4,10 @@ from datetime import datetime, timedelta
 
 st.set_page_config(page_title="Del Niño Pickleball Club", page_icon="🏓", layout="wide")
 
-st.title("🏓 Del Niño Pickleball Club Dashboard")
+st.title("🏓 Del Niño Pickleball Club Tracker")
 st.markdown("---")
 
-# 🟢 PASTE YOUR NEW GOOGLE SHEET URL HERE
+# 🟢 PASTE YOUR GOOGLE SHEET URL HERE
 BASE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1kDSwEA75lTPwv-wNGCnU6IPI2day9D69hgan_xuG7sA/edit?gid=0#gid=0"
 
 @st.cache_data(ttl=5)
@@ -45,16 +45,18 @@ if raw_sheet_df is not None:
     else:
         clean_df = calendar_df
 
-    # Calculations
-    clean_df["Members Count"] = pd.to_numeric(clean_df.get("Members Count", 0), errors='coerce').fillna(0)
-    clean_df["Non-Members Count"] = pd.to_numeric(clean_df.get("Non-Members Count", 0), errors='coerce').fillna(0)
+    # Calculations with forced Integer formatting for counts
+    clean_df["Members Count"] = pd.to_numeric(clean_df.get("Members Count", 0), errors='coerce').fillna(0).astype(int)
+    clean_df["Non-Members Count"] = pd.to_numeric(clean_df.get("Non-Members Count", 0), errors='coerce').fillna(0).astype(int)
     clean_df["Misc Expenses"] = pd.to_numeric(clean_df.get("Misc Expenses", 0), errors='coerce').fillna(0)
     
-    clean_df["Total Players"] = clean_df["Members Count"] + clean_df["Non-Members Count"]
+    # Total players as clean integer
+    clean_df["Total Players"] = (clean_df["Members Count"] + clean_df["Non-Members Count"]).astype(int)
+    
     clean_df["Total Collected"] = (clean_df["Members Count"] * 100) + (clean_df["Non-Members Count"] * 150)
     clean_df["Court Cost"] = 3600
     
-    # NEW LOGIC: Net Cash for Today
+    # Net Cash Logic
     clean_df["Net Cash for Today"] = clean_df.apply(
         lambda r: (r["Total Collected"] - r["Court Cost"]) - r["Misc Expenses"] if r["Total Players"] > 0 else 0, axis=1
     )
@@ -70,5 +72,19 @@ if raw_sheet_df is not None:
     
     # Display Ledger
     st.subheader("Live Session Ledger")
-    display_cols = ["Date", "Day", "Venue", "Total Players", "Total Collected", "Court Cost", "Misc Expenses", "Net Cash for Today"]
-    st.dataframe(clean_df[display_cols].style.format({"Total Collected": "₱{:,.2f}", "Court Cost": "₱{:,.2f}", "Misc Expenses": "₱{:,.2f}", "Net Cash for Today": "₱{:,.2f}"}), use_container_width=True)
+    
+    # We use a formatter dictionary to keep 'Total Players' as integer
+    display_df = clean_df[[
+        "Date", "Day", "Venue", "Members Count", "Non-Members Count", 
+        "Total Players", "Total Collected", "Court Cost", "Misc Expenses", "Net Cash for Today"
+    ]]
+    
+    st.dataframe(display_df.style.format({
+        "Total Collected": "₱{:,.2f}", 
+        "Court Cost": "₱{:,.2f}", 
+        "Misc Expenses": "₱{:,.2f}", 
+        "Net Cash for Today": "₱{:,.2f}",
+        "Members Count": "{:.0f}",
+        "Non-Members Count": "{:.0f}",
+        "Total Players": "{:.0f}"
+    }), use_container_width=True)
