@@ -82,9 +82,10 @@ if raw_sheet_df is not None:
     st.markdown("---")
 
     def highlight_financials(val):
-        color = '#375623' if val > 0 else '#C00000' if val < 0 else 'black'
-        bg = '#E2EFDA' if val > 0 else '#FCE4D6' if val < 0 else ''
-        return f'color: {color}; background-color: {bg}; font-weight: bold;'
+        # We use lighter shades of green and red to ensure they pop against the dark green background
+        color = '#76FF7B' if val > 0 else '#FF6B6B' if val < 0 else 'white'
+        bg = 'background-color: transparent;'
+        return f'color: {color}; {bg} font-weight: bold;'
 
     tab1, tab2, tab3 = st.tabs(["📅 Live Session Ledger", "💵 Expenses Ledger", "📋 Clipboard Report Generator"])
 
