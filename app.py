@@ -1,59 +1,58 @@
 import streamlit as st
 import pandas as pd
 
-# Page Configuration Setup
+# 1. Page Configuration Setup
 st.set_page_config(page_title="Del Niño Pickleball Club", page_icon="🏓", layout="wide")
 
 st.title("🏓 Del Niño Pickleball Club Dashboard")
 st.markdown("### Running Management & Cash Flow Hub")
 st.markdown("---")
 
-# 🟢 YOUR INTEGRATED CLOUD LINK 
-# (Note: If you move your rows to Google Sheets, just swap this with your new Sheet URL!)
-BASE_SHEET_URL = "https://docs.google.com/document/d/148EmmkbeQO_uQjK9ggBTu77sxT60jZ9LMob_HJkbqKE/edit"
+# 🟢 YOUR INTEGRATED LIVE GOOGLE SHEET DATABASE LINK
+BASE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1XRv9HgizaB13s2nNUZOAen2aWzllEA9Ne21yjJPoF-k/edit"
 
-@st.cache_data(ttl=10)  # Auto-refreshes data changes every 10 seconds
+@st.cache_data(ttl=15)  # Auto-refreshes data changes every 15 seconds when you view the site
 def load_tab_data(sheet_url):
     try:
-        # Handles transformation of the edit URL into a clean data stream
-        if "spreadsheets" in sheet_url:
-            csv_url = sheet_url.split("/edit")[0] + "/export?format=csv&sheet=Open+Play+Cash+Flow"
-        else:
-            # Fallback wrapper if using the document viewer stream
-            csv_url = sheet_url.split("/edit")[0] + "/export?format=csv"
+        # Converts your standard browser link into an automated CSV data stream export link
+        csv_url = sheet_url.split("/edit")[0] + "/export?format=csv&gid=0"
         
-        df = pd.read_csv(csv_url)
+        # Read the raw stream, skipping title header structures to isolate rows cleanly
+        df = pd.read_csv(csv_url, skiprows=9)
         return df
     except Exception as e:
-        st.error(f"Waiting for live spreadsheet data stream link configuration... Error detail: {e}")
+        st.error(f"Error fetching data from cloud database stream: {e}")
         return None
 
 df = load_tab_data(BASE_SHEET_URL)
 
 if df is not None:
-    # Clean hidden layout spaces out of the data headers
+    # Strip hidden spacer layout formatting out of data headers
     df.columns = df.columns.str.strip()
     
-    # Filter out completely empty or blank placeholder rows
+    # Isolate real rows and drop unplayed empty placeholder rows
     if "Date" in df.columns:
         clean_df = df.dropna(subset=["Date"]).copy()
+        # Filter out rows that might accidentally contain string summaries instead of dates
+        clean_df = clean_df[clean_df["Date"].str.contains(r'\d{4}', na=False)]
     else:
         clean_df = df.copy()
         
-    # Ensure numerical properties process arithmetic correctly without breaks
-    for col in ["Total Collected", "Session Profit/Loss", "Misc Expenses", "Members Count", "Non-Members Count", "Total Players"]:
+    # Convert core columns to strict numbers so mathematics run perfectly without breaking
+    numeric_cols = ["Total Collected", "Session Profit/Loss", "Misc Expenses", "Members Count", "Non-Members Count", "Total Players"]
+    for col in numeric_cols:
         if col in clean_df.columns:
-            clean_df[col] = pd.to_numeric(clean_df[col], errors='coerce').fillna(0)
+            clean_df[col] = pd.to_numeric(clean_df[col].astype(str).str.replace('₱', '').str.replace(',', ''), errors='coerce').fillna(0)
         else:
             clean_df[col] = 0
 
-    # YTD KPI Summary Card Computations
+    # 2. YTD KPI Card Summary Aggregations
     total_revenue = clean_df["Total Collected"].sum()
     gross_profits = clean_df[clean_df["Session Profit/Loss"] > 0]["Session Profit/Loss"].sum()
     total_expenses = clean_df["Misc Expenses"].sum()
     cash_in_bank = gross_profits - total_expenses
 
-    # Render Visual Board KPI Metrics Row
+    # Render Visual Dashboard KPIs Grid
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Total Open Play Revenue", f"₱{total_revenue:,.2f}")
     col2.metric("Gross Play Profits (Positive Only)", f"₱{gross_profits:,.2f}")
@@ -62,13 +61,13 @@ if df is not None:
     
     st.markdown("---")
     
-    # Core Application View Navigation Tabs
+    # 3. Web Navigation Views Tabs Configuration
     tab1, tab2 = st.tabs(["📅 Live Session Ledger", "📋 Clipboard Report Generator"])
     
     with tab1:
         st.subheader("Rolling Activity Records")
         
-        # Colorizer function for dynamic Green/Red formatting rules
+        # Row highlighting rule matrix for dynamic Green / Red logic thresholds
         def highlight_financials(row):
             formats = [''] * len(row)
             if "Session Profit/Loss" in row.index:
@@ -80,6 +79,7 @@ if df is not None:
                     formats[idx] = 'background-color: #FCE4D6; color: #C00000; font-weight: bold;'
             return formats
 
+        # Display the live database grid interactively
         styled_df = clean_df.style.apply(highlight_financials, axis=1)
         st.dataframe(styled_df, use_container_width=True, height=450)
         
@@ -88,11 +88,11 @@ if df is not None:
         st.info("Slide to select your session row to dynamically prepare your message text block block:")
         
         if len(clean_df) > 0:
-            # Row selection slider controller tool
+            # Row selection slider tool controller
             selected_row_idx = st.slider("Select Row Sequence", min_value=0, max_value=len(clean_df)-1, value=0)
             row_data = clean_df.iloc[selected_row_idx]
             
-            # Formulates the copied group chat report automatically
+            # Formulates the copy-paste chat string summary automatically
             flash_report = f"""🏓 *DEL NIÑO PICKLEBALL CLUB - DAILY OPEN PLAY REPORT*
 ---------------------------------------------------------------------
 *Date:* {row_data.get('Date', 'N/A')}  |  *Venue:* {row_data.get('Venue', 'N/A')}
