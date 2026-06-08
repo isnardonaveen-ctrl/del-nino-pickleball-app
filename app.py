@@ -26,7 +26,14 @@ st.markdown("""
     }
     </style>
     """, unsafe_allow_html=True)
-st.title("Del Niño Pickleball Club Tracker")
+# Create a side-by-side layout for the logo and the title
+col_logo, col_title = st.columns([1, 8])
+
+with col_logo:
+    st.image("https://github.com/isnardonaveen-ctrl/del-nino-pickleball-app/blob/main/6832fb4b-7df6-4105-9c8c-7140bfdf4668-removebg-preview.png?raw=true", width=80)
+
+with col_title:
+    st.title("Del Niño Pickleball Club Tracker")
 st.markdown("---")
 
 BASE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1kDSwEA75lTPwv-wNGCnU6IPI2day9D69hgan_xuG7sA/edit?gid=0#gid=0"
