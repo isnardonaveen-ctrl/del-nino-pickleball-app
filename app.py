@@ -147,6 +147,22 @@ if raw_sheet_df is not None:
     col4.metric("Actual Cash In Bank", f"₱{clean_df['Net Cash for Today'].sum():,.2f}")
     
     st.markdown("---")
+    
+    # --- ADDED CHARTS ---
+    st.subheader("📈 Financial Overview")
+    
+    # Create a clean dataframe for plotting
+    plot_df = clean_df.set_index("Date")[["Total Collected", "Net Cash for Today"]]
+    
+    # Plotting: Bar chart for Revenue vs Net Cash
+    st.bar_chart(plot_df)
+    
+    # Optional: Plotting Total Players
+    st.subheader("👥 Player Trends")
+    st.line_chart(clean_df.set_index("Date")[["Total Players"]])
+    # --------------------
+
+    st.markdown("---")
 
     def highlight_financials(val):
         # We use lighter shades of green and red to ensure they pop against the dark green background
