@@ -88,4 +88,4 @@ if raw_sheet_df is not None:
         "Members Count": "{:.0f}",
         "Non-Members Count": "{:.0f}",
         "Total Players": "{:.0f}"
-    }).applymap(highlight_financials, subset=['Net Cash for Today']), use_container_width=True)
+    }).map(highlight_financials, subset=['Net Cash for Today']), use_container_width=True)
