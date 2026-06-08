@@ -16,17 +16,23 @@ st.markdown("""
         border-right: 2px solid #D4AF37 !important;
     }
     
-    /* Ensure all text/labels inside sidebar are white */
+    /* Ensure text inside sidebar is white */
     [data-testid="stSidebar"] div, [data-testid="stSidebar"] span, [data-testid="stSidebar"] p, [data-testid="stSidebar"] label {
         color: #FFFFFF !important;
     }
 
-    /* Force the collapse button to be visible Gold */
-    [data-testid="stSidebarCollapseButton"] {
-        color: #D4AF37 !important;
+    /* FIX: Force collapse button to be visible Gold */
+    button[data-testid="stSidebarCollapseButton"] svg {
+        fill: #D4AF37 !important;
     }
     
-    /* Fix the dropdown box background and text for readability */
+    /* Add contrast to the button container */
+    button[data-testid="stSidebarCollapseButton"] {
+        background-color: rgba(212, 175, 55, 0.1) !important;
+        border-radius: 5px !important;
+    }
+    
+    /* Fix the dropdown box for filter visibility */
     div[data-baseweb="select"] > div {
         background-color: #ffffff !important;
     }
