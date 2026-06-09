@@ -195,6 +195,7 @@ if raw_sheet_df is not None:
 
     with tab1:
         with tab1:
+            
         # Added 'T-shirt Sales' and 'Membership Fees' to the list below
         display_df = clean_df[["Date", "Day", "Venue", "Total Players", "Daily Fees", "T-shirt Sales", "Membership Fees", "Total Collected", "Court Cost", "Misc Expenses", "Net Cash for Today"]]
         
