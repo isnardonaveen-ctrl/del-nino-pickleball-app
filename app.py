@@ -206,8 +206,10 @@ if raw_sheet_df is not None:
     tab1, tab2, tab3 = st.tabs(["📅 Live Session Ledger", "💵 Expenses Ledger", "📋 Clipboard Report Generator"])
 
     with tab1:
-        display_df = clean_df[["Date", "Day", "Venue", "Total Players", "Daily Fees", "T-shirt Sales", "Membership Fees", "Total Collected", "Court Cost", "Misc Expenses", "Net Cash for Today"]]
+        display_df = clean_df[["Date", "Day", "Venue", "Members Count", "Non-Members Count", "Total Players", "Daily Fees", "T-shirt Sales", "Membership Fees", "Total Collected", "Court Cost", "Misc Expenses", "Net Cash for Today"]]
         st.dataframe(display_df.style.format({
+            "Members Count": "{:.0f}",
+            "Non-Members Count": "{:.0f}",
             "Daily Fees": "₱{:,.2f}", 
             "T-shirt Sales": "₱{:,.2f}", 
             "Membership Fees": "₱{:,.2f}",
@@ -236,8 +238,3 @@ if raw_sheet_df is not None:
                 label="📥 Download PDF Report",
                 data=pdf_data,
                 file_name=f"Report_{selected_month_for_pdf}_2026.pdf",
-                mime="application/pdf"
-            )
-            st.success(f"Report for {selected_month_for_pdf} generated!")
-else:
-    st.error("Failed to load spreadsheet link configuration data.")
