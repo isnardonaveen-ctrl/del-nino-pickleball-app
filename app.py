@@ -172,8 +172,8 @@ if raw_sheet_df is not None:
 
     # Core Math Operational Rules
     clean_df["Total Players"] = (clean_df["Members Count"] + clean_df["Non-Members Count"]).astype(int)
-    clean_df["Daily Fees"] = (clean_df["Members Count"] * 100) + (clean_df["Non-Members Count"] * 150)
-    clean_df["Total Collected"] = clean_df["Daily Fees"] + clean_df["T-shirt Sales"] + clean_df["Membership Fees"]
+    clean_df["Open Play Total Fees"] = (clean_df["Members Count"] * 100) + (clean_df["Non-Members Count"] * 150)
+    clean_df["Total Collected"] = clean_df["Open Play Total Fees"] + clean_df["T-shirt Sales"] + clean_df["Membership Fees"]
     
     clean_df["Court Cost"] = 3600
     clean_df["Net Cash for Today"] = clean_df.apply(lambda r: (r["Total Collected"] - r["Court Cost"]) - r["Misc Expenses"] if r["Total Players"] > 0 else 0, axis=1)
@@ -206,11 +206,11 @@ if raw_sheet_df is not None:
     tab1, tab2, tab3 = st.tabs(["📅 Live Session Ledger", "💵 Expenses Ledger", "📋 Clipboard Report Generator"])
 
     with tab1:
-        display_df = clean_df[["Date", "Day", "Venue", "Members Count", "Non-Members Count", "Total Players", "Daily Fees", "T-shirt Sales", "Membership Fees", "Total Collected", "Court Cost", "Misc Expenses", "Net Cash for Today"]]
+        display_df = clean_df[["Date", "Day", "Venue", "Members Count", "Non-Members Count", "Total Players", "Open Play Total Fees", "T-shirt Sales", "Membership Fees", "Total Collected", "Court Cost", "Misc Expenses", "Net Cash for Today"]]
         st.dataframe(display_df.style.format({
             "Members Count": "{:.0f}",
             "Non-Members Count": "{:.0f}",
-            "Daily Fees": "₱{:,.2f}", 
+            "Open Play Total Fees": "₱{:,.2f}", 
             "T-shirt Sales": "₱{:,.2f}", 
             "Membership Fees": "₱{:,.2f}",
             "Total Collected": "₱{:,.2f}", 
