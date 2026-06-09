@@ -148,4 +148,94 @@ def generate_monthly_report(df, month_name):
     
     return pdf.output(dest='S').encode('latin-1')
 
-if
+if raw_sheet_df is not None:
+    raw_sheet_df.columns = raw_sheet_df.columns.str.strip()
+    
+    # Structural Safety Check
+    target_cols = ["Members Count", "Non-Members Count", "Misc Expenses", "T-shirt Sales", "Membership Fees"]
+    for col in target_cols:
+        if col not in raw_sheet_df.columns:
+            raw_sheet_df[col] = 0
+
+    if "Date" in raw_sheet_df.columns:
+        raw_sheet_df["Date"] = raw_sheet_df["Date"].astype(str).str.strip()
+        clean_df = pd.merge(calendar_df, raw_sheet_df.dropna(subset=["Date"]), on="Date", how="left")
+    else:
+        clean_df = calendar_df
+
+    # Standardize Array types safely
+    for col in target_cols:
+        clean_df[col] = pd.to_numeric(clean_df[col], errors='coerce').fillna(0)
+
+    clean_df["Members Count"] = clean_df["Members Count"].astype(int)
+    clean_df["Non-Members Count"] = clean_df["Non-Members Count"].astype(int)
+
+    # Core Math Operational Rules
+    clean_df["Total Players"] = (clean_df["Members Count"] + clean_df["Non-Members Count"]).astype(int)
+    clean_df["Daily Fees"] = (clean_df["Members Count"] * 100) + (clean_df["Non-Members Count"] * 150)
+    clean_df["Total Collected"] = clean_df["Daily Fees"] + clean_df["T-shirt Sales"] + clean_df["Membership Fees"]
+    
+    clean_df["Court Cost"] = 3600
+    clean_df["Net Cash for Today"] = clean_df.apply(lambda r: (r["Total Collected"] - r["Court Cost"]) - r["Misc Expenses"] if r["Total Players"] > 0 else 0, axis=1)
+
+    # Sidebar Filter Operations
+    clean_df['Month'] = pd.to_datetime(clean_df['Date']).dt.month_name()
+    all_months = clean_df['Month'].unique().tolist()
+    
+    with st.sidebar:
+        st.subheader("📊 Filter Data")
+        selected_months = st.multiselect("Select Months:", options=all_months, default=all_months)
+    
+    if selected_months:
+        clean_df = clean_df[clean_df['Month'].isin(selected_months)]
+
+    # Metrics Display Cards
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Total Revenue", f"₱{clean_df['Total Collected'].sum():,.2f}")
+    col2.metric("Gross Profits", f"₱{clean_df[clean_df['Net Cash for Today'] > 0]['Net Cash for Today'].sum():,.2f}")
+    col3.metric("Total Expenses", f"₱{clean_df['Misc Expenses'].sum():,.2f}")
+    col4.metric("Actual Cash In Bank", f"₱{clean_df['Net Cash for Today'].sum():,.2f}")
+    
+    st.markdown("---")
+
+    def highlight_financials(val):
+        color = '#76FF7B' if val > 0 else '#FF6B6B' if val < 0 else 'white'
+        bg = 'background-color: transparent;'
+        return f'color: {color}; {bg} font-weight: bold;'
+
+    tab1, tab2, tab3 = st.tabs(["📅 Live Session Ledger", "💵 Expenses Ledger", "📋 Clipboard Report Generator"])
+
+    with tab1:
+        display_df = clean_df[["Date", "Day", "Venue", "Members Count", "Non-Members Count", "Total Players", "Daily Fees", "T-shirt Sales", "Membership Fees", "Total Collected", "Court Cost", "Misc Expenses", "Net Cash for Today"]]
+        st.dataframe(display_df.style.format({
+            "Members Count": "{:.0f}",
+            "Non-Members Count": "{:.0f}",
+            "Daily Fees": "₱{:,.2f}", 
+            "T-shirt Sales": "₱{:,.2f}", 
+            "Membership Fees": "₱{:,.2f}",
+            "Total Collected": "₱{:,.2f}", 
+            "Court Cost": "₱{:,.2f}", 
+            "Misc Expenses": "₱{:,.2f}", 
+            "Net Cash for Today": "₱{:,.2f}"
+        }).map(highlight_financials, subset=['Net Cash for Today']), use_container_width=True)
+
+    with tab2:
+        expense_cols = ["Date", "Venue", "Misc Expenses"]
+        if "Expenses Remarks" in clean_df.columns:
+            expense_cols.append("Expenses Remarks")
+        expense_df = clean_df[clean_df["Misc Expenses"] > 0][expense_cols]
+        st.dataframe(expense_df.style.format({"Misc Expenses": "₱{:,.2f}"}), use_container_width=True)
+
+    with tab3:
+        st.subheader("📋 Monthly Audit Report")
+        selected_month_for_pdf = st.selectbox("Choose a month to export:", all_months)
+        
+        if st.button("Generate PDF Report"):
+            report_df = clean_df[clean_df['Month'] == selected_month_for_pdf]
+            pdf_data = generate_monthly_report(report_df, selected_month_for_pdf)
+            
+            # Safe single-line execution to avoid syntax errors
+            st.download_button(label="📥 Download PDF Report", data=pdf_data, file_name=f"Report_{selected_month_for_pdf}_2026.pdf", mime="application/pdf")
+            st.success(f"Report for {selected_month_for_pdf} generated!")
+else:
+    st.error("Failed to load spreadsheet link configuration data.")
