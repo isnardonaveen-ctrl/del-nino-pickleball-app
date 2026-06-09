@@ -105,16 +105,7 @@ from fpdf import FPDF
 def generate_monthly_report(df, month_name):
     pdf = FPDF()
     pdf.add_page()
-    # ... inside your function after total_expenses calculation ...
-    # Add these lines:
-    total_shirt_sales = df['T-shirt Sales'].sum()
-    total_membership = df['Membership Fees'].sum()
     
-    pdf.cell(100, 10, "Total T-shirt Sales:", border=1)
-    pdf.cell(0, 10, f"PHP {total_shirt_sales:,.2f}", border=1, ln=True)
-    
-    pdf.cell(100, 10, "Total Membership Fees:", border=1)
-    pdf.cell(0, 10, f"PHP {total_membership:,.2f}", border=1, ln=True)
     # Title
     pdf.set_font("Arial", 'B', 16)
     pdf.cell(0, 10, f"Del Nino Club Report: {month_name} 2026", ln=True, align='C')
@@ -124,11 +115,19 @@ def generate_monthly_report(df, month_name):
     total_expenses = df['Misc Expenses'].sum()
     avg_players = df['Total Players'].mean() if not df.empty else 0
     total_costs = df['Court Cost'].sum() + total_expenses
+    total_shirt_sales = df['T-shirt Sales'].sum()
+    total_membership = df['Membership Fees'].sum()
     
     # Summary Table
     pdf.set_font("Arial", '', 12)
     pdf.cell(100, 10, "Total Expenses:", border=1)
     pdf.cell(0, 10, f"PHP {total_expenses:,.2f}", border=1, ln=True)
+    
+    pdf.cell(100, 10, "Total T-shirt Sales:", border=1)
+    pdf.cell(0, 10, f"PHP {total_shirt_sales:,.2f}", border=1, ln=True)
+    
+    pdf.cell(100, 10, "Total Membership Fees:", border=1)
+    pdf.cell(0, 10, f"PHP {total_membership:,.2f}", border=1, ln=True)
     
     pdf.cell(100, 10, "Average Players/Day:", border=1)
     pdf.cell(0, 10, f"{avg_players:.1f}", border=1, ln=True)
@@ -194,8 +193,6 @@ if raw_sheet_df is not None:
     tab1, tab2, tab3 = st.tabs(["📅 Live Session Ledger", "💵 Expenses Ledger", "📋 Clipboard Report Generator"])
 
     with tab1:
-        with tab1:
-            
         # Added 'T-shirt Sales' and 'Membership Fees' to the list below
         display_df = clean_df[["Date", "Day", "Venue", "Total Players", "Daily Fees", "T-shirt Sales", "Membership Fees", "Total Collected", "Court Cost", "Misc Expenses", "Net Cash for Today"]]
         
@@ -208,7 +205,7 @@ if raw_sheet_df is not None:
             "Misc Expenses": "₱{:,.2f}", 
             "Net Cash for Today": "₱{:,.2f}"
         }).map(highlight_financials, subset=['Net Cash for Today']), use_container_width=True)
-
+        
     with tab2:
         expense_df = clean_df[clean_df["Misc Expenses"] > 0][["Date", "Venue", "Misc Expenses", "Expenses Remarks"]]
         st.dataframe(expense_df.style.format({"Misc Expenses": "₱{:,.2f}"}), use_container_width=True)
