@@ -119,4 +119,33 @@ def generate_monthly_report(df, month_name):
     
     # Title Configuration
     pdf.set_font("Arial", 'B', 16)
-    pdf.cell(
+    pdf.cell(190, 10, txt=f"Del Nino Club Report: {month_name} 2026", ln=1, align='C')
+    pdf.ln(10)
+    
+    # Financial Extractions
+    total_expenses = df['Misc Expenses'].sum() if 'Misc Expenses' in df.columns else 0
+    avg_players = df['Total Players'].mean() if 'Total Players' in df.columns and not df.empty else 0
+    total_costs = (df['Court Cost'].sum() if 'Court Cost' in df.columns else 0) + total_expenses
+    total_shirt_sales = df['T-shirt Sales'].sum() if 'T-shirt Sales' in df.columns else 0
+    total_membership = df['Membership Fees'].sum() if 'Membership Fees' in df.columns else 0
+    
+    # Build Document View
+    pdf.set_font("Arial", '', 12)
+    pdf.cell(100, 10, txt="Total Expenses:", border=1)
+    pdf.cell(90, 10, txt=f"PHP {total_expenses:,.2f}", border=1, ln=1)
+    
+    pdf.cell(100, 10, txt="Total T-shirt Sales:", border=1)
+    pdf.cell(90, 10, txt=f"PHP {total_shirt_sales:,.2f}", border=1, ln=1)
+    
+    pdf.cell(100, 10, txt="Total Membership Fees:", border=1)
+    pdf.cell(90, 10, txt=f"PHP {total_membership:,.2f}", border=1, ln=1)
+    
+    pdf.cell(100, 10, txt="Average Players/Day:", border=1)
+    pdf.cell(90, 10, txt=f"{avg_players:.1f}", border=1, ln=1)
+    
+    pdf.cell(100, 10, txt="Total Operational Costs:", border=1)
+    pdf.cell(90, 10, txt=f"PHP {total_costs:,.2f}", border=1, ln=1)
+    
+    return pdf.output(dest='S').encode('latin-1')
+
+if
