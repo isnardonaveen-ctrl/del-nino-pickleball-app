@@ -105,7 +105,16 @@ from fpdf import FPDF
 def generate_monthly_report(df, month_name):
     pdf = FPDF()
     pdf.add_page()
+    # ... inside your function after total_expenses calculation ...
+    # Add these lines:
+    total_shirt_sales = df['T-shirt Sales'].sum()
+    total_membership = df['Membership Fees'].sum()
     
+    pdf.cell(100, 10, "Total T-shirt Sales:", border=1)
+    pdf.cell(0, 10, f"PHP {total_shirt_sales:,.2f}", border=1, ln=True)
+    
+    pdf.cell(100, 10, "Total Membership Fees:", border=1)
+    pdf.cell(0, 10, f"PHP {total_membership:,.2f}", border=1, ln=True)
     # Title
     pdf.set_font("Arial", 'B', 16)
     pdf.cell(0, 10, f"Del Nino Club Report: {month_name} 2026", ln=True, align='C')
@@ -136,11 +145,20 @@ if raw_sheet_df is not None:
     else:
         clean_df = calendar_df
 
+    # Ensure columns exist and fill NaNs with 0
     clean_df["Members Count"] = pd.to_numeric(clean_df.get("Members Count", 0), errors='coerce').fillna(0).astype(int)
     clean_df["Non-Members Count"] = pd.to_numeric(clean_df.get("Non-Members Count", 0), errors='coerce').fillna(0).astype(int)
     clean_df["Misc Expenses"] = pd.to_numeric(clean_df.get("Misc Expenses", 0), errors='coerce').fillna(0)
+    
+    # ADDED: Handle New Income Columns
+    clean_df["T-shirt Sales"] = pd.to_numeric(clean_df.get("T-shirt Sales", 0), errors='coerce').fillna(0)
+    clean_df["Membership Fees"] = pd.to_numeric(clean_df.get("Membership Fees", 0), errors='coerce').fillna(0)
+
+    # UPDATED: Total Collected formula
     clean_df["Total Players"] = (clean_df["Members Count"] + clean_df["Non-Members Count"]).astype(int)
-    clean_df["Total Collected"] = (clean_df["Members Count"] * 100) + (clean_df["Non-Members Count"] * 150)
+    clean_df["Daily Fees"] = (clean_df["Members Count"] * 100) + (clean_df["Non-Members Count"] * 150)
+    clean_df["Total Collected"] = clean_df["Daily Fees"] + clean_df["T-shirt Sales"] + clean_df["Membership Fees"]
+    
     clean_df["Court Cost"] = 3600
     clean_df["Net Cash for Today"] = clean_df.apply(lambda r: (r["Total Collected"] - r["Court Cost"]) - r["Misc Expenses"] if r["Total Players"] > 0 else 0, axis=1)
 
@@ -176,10 +194,17 @@ if raw_sheet_df is not None:
     tab1, tab2, tab3 = st.tabs(["📅 Live Session Ledger", "💵 Expenses Ledger", "📋 Clipboard Report Generator"])
 
     with tab1:
-        display_df = clean_df[["Date", "Day", "Venue", "Members Count", "Non-Members Count", "Total Players", "Total Collected", "Court Cost", "Misc Expenses", "Net Cash for Today"]]
+        with tab1:
+        # Added 'T-shirt Sales' and 'Membership Fees' to the list below
+        display_df = clean_df[["Date", "Day", "Venue", "Total Players", "Daily Fees", "T-shirt Sales", "Membership Fees", "Total Collected", "Court Cost", "Misc Expenses", "Net Cash for Today"]]
         st.dataframe(display_df.style.format({
-            "Total Collected": "₱{:,.2f}", "Court Cost": "₱{:,.2f}", "Misc Expenses": "₱{:,.2f}", "Net Cash for Today": "₱{:,.2f}",
-            "Members Count": "{:.0f}", "Non-Members Count": "{:.0f}", "Total Players": "{:.0f}"
+            "Daily Fees": "₱{:,.2f}", 
+            "T-shirt Sales": "₱{:,.2f}", 
+            "Membership Fees": "₱{:,.2f}",
+            "Total Collected": "₱{:,.2f}", 
+            "Court Cost": "₱{:,.2f}", 
+            "Misc Expenses": "₱{:,.2f}", 
+            "Net Cash for Today": "₱{:,.2f}"
         }).map(highlight_financials, subset=['Net Cash for Today']), use_container_width=True)
 
     with tab2:
