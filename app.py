@@ -62,38 +62,42 @@ with st.sidebar:
 
 # --- PAGE 1: PUBLIC HOME PAGE ---
 def show_home_page():
-    st.markdown("<h1 style='text-align: center;'>Del Niño Pickleball Club</h1>", unsafe_allow_html=True)
-    st.markdown("<h3 style='text-align: center;'>The Heart of Pickleball in Tacloban City</h3>", unsafe_allow_html=True)
+    # --- HERO SECTION ---
+    with st.container():
+        st.markdown("<h1 style='text-align: center; color: #D4AF37;'>Del Niño Pickleball Club</h1>", unsafe_allow_html=True)
+        st.markdown("<h3 style='text-align: center; color: #FFFFFF;'>Tacloban City's Premier Pickleball Community</h3>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; color: #E0E0E0;'>Welcome to the heart of the fastest-growing sports community in Tacloban City!</p>", unsafe_allow_html=True)
+        
+        # Center the Registration Button
+        col1, col2, col3 = st.columns([1, 1, 1])
+        with col2:
+            st.link_button("📝 JOIN THE CLUB: REGISTER HERE", "https://docs.google.com/forms/d/e/1FAIpQLSeqO26XzEBb6B8g0bugD8GeLEjIKmYjHXceMnIrcbwpHgsZYQ/viewform")
+    
     st.markdown("---")
     
+    # --- INFO SECTION ---
     col1, col2 = st.columns([2, 1])
     with col1:
-        st.markdown("""
-        **Del Niño Pickleball Club** is the premier home for pickleball in Tacloban. We are a fast-growing, inclusive community dedicated to one thing: bringing people together through the power of the paddle.
-
-        ### Who We Are
-        Whether you are picking up a paddle for the first time or you are a seasoned pro, you belong here. We champion an environment where everyone—regardless of age, gender, or skill—is welcome to play, grow, and compete.
-
-        ### Why Join Us?
-        * **All-Inclusive:** From beginners learning the basics to pros fine-tuning their strategy, our community is built for every level.
-        * **Dynamic Play:** Beyond open play, we offer high-energy tournaments, competitive leagues, and social events.
-        * **A Growing Family:** We’re more than a club; we’re a community. Join us for the fitness, and stay for the friendships.
+        st.subheader("About Us")
+        st.write("""
+        **Del Niño Pickleball Club** is dedicated to bringing people together through the power of the paddle. 
+        Whether you are a beginner or a pro, we provide an inclusive environment for everyone to grow and compete.
         """)
         
-        st.subheader("Weekly Schedule")
-        st.write("📅 **Tuesdays, Thursdays, Saturdays:** Southside")
-        st.write("📅 **Sundays, Mondays, Wednesdays, Fridays:** Smashville")
-        
-        st.subheader("Open Play Fees")
-        st.write("💰 **Members:** ₱100")
-        st.write("💰 **Non-Members:** ₱150")
+        c1, c2 = st.columns(2)
+        with c1:
+            st.subheader("📅 Schedule")
+            st.write("Tue, Thu, Sat: **Southside**")
+            st.write("Sun, Mon, Wed, Fri: **Smashville**")
+        with c2:
+            st.subheader("💰 Fees")
+            st.write("Members: **₱100**")
+            st.write("Non-Members: **₱150**")
 
     with col2:
-        st.subheader("Join the Club!")
-        st.write("Ready to hit the courts with us? Click below to fill out our membership form.")
-        st.button("📝 Click Here to Register")
-    
-    st.write("### See you on the court! 🏓✨")
+        st.subheader("Quick Register")
+        # Ensure 'qr-code.png' is uploaded to your GitHub repository
+        st.image("qr-code.png", caption="Scan to Register", width=250)
 
 # --- PAGE 2: SECURE ADMIN DASHBOARD ---
 def show_admin_page():
