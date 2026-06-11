@@ -152,4 +152,10 @@ def show_admin_page():
             pdf.cell(100, 10, txt="Total T-shirt Sales:", border=1)
             pdf.cell(90, 10, txt=f"PHP {total_shirt_sales:,.2f}", border=1, ln=1)
             pdf.cell(100, 10, txt="Total Membership Fees:", border=1)
-            pdf.cell(
+            pdf.cell(90, 10, txt=f"PHP {total_membership:,.2f}", border=1, ln=1)
+            pdf.cell(100, 10, txt="Average Players/Day:", border=1)
+            pdf.cell(90, 10, txt=f"{avg_players:.1f}", border=1, ln=1)
+            pdf.cell(100, 10, txt="Total Operational Costs:", border=1)
+            pdf.cell(90, 10, txt=f"PHP {total_costs:,.2f}", border=1, ln=1)
+            
+            return pdf.output(dest='S').encode('latin-1')
