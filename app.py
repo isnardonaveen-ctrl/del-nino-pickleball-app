@@ -167,4 +167,18 @@ def show_admin_page():
             col1.metric("Revenue", f"₱{clean_df['Total Collected'].sum():,.2f}")
             col2.metric("Profits", f"₱{clean_df[clean_df['Net Cash for Today'] > 0]['Net Cash for Today'].sum():,.2f}")
             col3.metric("Expenses", f"₱{clean_df['Misc Expenses'].sum():,.2f}")
-            col4.metric("Bank", f"₱{clean_df['Net
+            col4.metric("Bank", f"₱{clean_df['Net Cash for Today'].sum():,.2f}")
+            
+            st.markdown("---")
+            tab1, tab2, tab3 = st.tabs(["📅 Ledger", "💵 Expenses", "📋 Report"])
+            with tab1: st.dataframe(clean_df, use_container_width=True)
+            with tab3:
+                selected_month_for_pdf = st.selectbox("Choose month:", all_months)
+                if st.button("Generate PDF Report"):
+                    pdf_data = generate_monthly_report(clean_df[clean_df['Month'] == selected_month_for_pdf], selected_month_for_pdf)
+                    st.download_button("📥 Download PDF", data=pdf_data, file_name="Report.pdf", mime="application/pdf")
+        else: st.error("Failed to load spreadsheet.")
+    elif password != "": st.error("Incorrect Password.")
+
+if page == "🏠 Home": show_home_page()
+elif page == "🔒 Admin Dashboard": show_admin_page()
