@@ -81,8 +81,8 @@ def show_home_page():
         """)
         
         st.subheader("Weekly Schedule")
-        st.write("📅 **Tuesdays, Thursdays, Saturdays:** Southside")
-        st.write("📅 **Sundays, Mondays, Wednesdays, Fridays:** Smashville")
+        st.write("📅 **Tuesdays, Thursdays, Saturdays:** Smashzone Southside")
+        st.write("📅 **Sundays, Mondays, Wednesdays, Fridays:** Smashzone Smashville")
         
         st.subheader("Open Play Fees")
         st.write("💰 **Members:** ₱100")
