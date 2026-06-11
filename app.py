@@ -34,6 +34,23 @@ st.markdown("""
         border: 1px solid rgba(212, 175, 55, 0.2);
     }
 
+    /* FIX: Dropdown Menu Colors */
+    div[data-baseweb="select"] { 
+        background-color: #0a4d35 !important; 
+        color: #FFFFFF !important; 
+    }
+    div[role="listbox"] { 
+        background-color: #0a4d35 !important; 
+        color: #FFFFFF !important; 
+    }
+    div[role="option"] { 
+        color: #FFFFFF !important; 
+    }
+    div[role="option"]:hover { 
+        background-color: #D4AF37 !important; 
+        color: #013220 !important; 
+    }
+
     div.stButton > button { 
         background-color: #D4AF37 !important; 
         color: #013220 !important; 
