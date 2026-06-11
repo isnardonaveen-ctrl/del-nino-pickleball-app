@@ -98,7 +98,7 @@ def load_live_data(sheet_url):
         return None
 
 def generate_2026_calendar():
-    start_date = datetime(2026, 6, 9)
+    start_date = datetime(2026, 4, 16)  # <-- Changed from June 9 to April 16!
     end_date = datetime(2026, 12, 31)
     dates, days, venues = [], [], []
     current = start_date
