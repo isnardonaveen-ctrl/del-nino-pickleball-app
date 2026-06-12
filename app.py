@@ -113,14 +113,14 @@ def show_home_page():
         # Added link button for registration
         st.link_button("📝 Click Here to Register", "https://docs.google.com/forms/d/e/1FAIpQLSeqO26XzEBb6B8g0bugD8GeLEjIKmYjHXceMnIrcbwpHgsZYQ/viewform")
     
-    st.write("### See you on the court! 🏓✨")
+    st.write("### See you on the court! ✨")
 
 # --- PAGE 2: SECURE ADMIN DASHBOARD ---
 def show_admin_page():
     st.markdown("<h1 style='text-align: center;'>Club Financial Tracker</h1>", unsafe_allow_html=True)
     password = st.text_input("Enter Admin Password:", type="password")
     
-    if password == "Admin123":
+    if password == "pechopak155":
         st.success("Access Granted.")
         st.markdown("---")
         
