@@ -151,13 +151,41 @@ def show_admin_page():
             pdf.set_font("Arial", 'B', 16)
             pdf.cell(190, 10, txt=f"Del Nino Club Report: {month_name} 2026", ln=1, align='C')
             pdf.ln(10)
+            
+            # --- CALCULATIONS FOR THE PDF ---
+            gross_profit = df['Total Collected'].sum() if 'Total Collected' in df.columns else 0
             total_expenses = df['Misc Expenses'].sum() if 'Misc Expenses' in df.columns else 0
-            total_costs = (df['Court Cost'].sum() if 'Court Cost' in df.columns else 0) + total_expenses
+            court_costs = df['Court Cost'].sum() if 'Court Cost' in df.columns else 0
+            total_costs = court_costs + total_expenses
+            
+            net_profit = df[df['Net Cash for Today'] > 0]['Net Cash for Today'].sum() if 'Net Cash for Today' in df.columns else 0
+            actual_cash = df['Net Cash for Today'].sum() if 'Net Cash for Today' in df.columns else 0
+            
+            # Filter for days with players to get an accurate daily average
+            active_days = df[df['Total Players'] > 0]
+            avg_players = active_days['Total Players'].mean() if not active_days.empty else 0
+            
+            # --- PDF RENDERING ---
             pdf.set_font("Arial", '', 12)
-            pdf.cell(100, 10, txt="Total Expenses:", border=1)
+            
+            pdf.cell(100, 10, txt="Total Gross Profit:", border=1)
+            pdf.cell(90, 10, txt=f"PHP {gross_profit:,.2f}", border=1, ln=1)
+            
+            pdf.cell(100, 10, txt="Total Expenses (Misc):", border=1)
             pdf.cell(90, 10, txt=f"PHP {total_expenses:,.2f}", border=1, ln=1)
+            
             pdf.cell(100, 10, txt="Total Operational Costs:", border=1)
             pdf.cell(90, 10, txt=f"PHP {total_costs:,.2f}", border=1, ln=1)
+            
+            pdf.cell(100, 10, txt="Total Net Profit After Expenses:", border=1)
+            pdf.cell(90, 10, txt=f"PHP {net_profit:,.2f}", border=1, ln=1)
+            
+            pdf.cell(100, 10, txt="Actual Cash in Bank:", border=1)
+            pdf.cell(90, 10, txt=f"PHP {actual_cash:,.2f}", border=1, ln=1)
+            
+            pdf.cell(100, 10, txt="Average Players Daily:", border=1)
+            pdf.cell(90, 10, txt=f"{avg_players:,.1f} players", border=1, ln=1)
+            
             return pdf.output(dest='S').encode('latin-1')
 
         raw_sheet_df = load_live_data(BASE_SHEET_URL)
