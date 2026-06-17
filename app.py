@@ -104,7 +104,8 @@ def show_home_page():
         st.subheader("Open Play Fees")
         st.write("💰 **Members:** ₱100")
         st.write("💰 **Non-Members:** ₱150")
-
+        st.write("💰 **https://reclub.co/clubs/@del-nino-pickleball")
+        
     with col2:
         st.subheader("Join the Club!")
         st.write("Ready to hit the courts with us? Click below to fill out our membership form.")
